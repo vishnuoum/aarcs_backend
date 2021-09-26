@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.29.2/sweetalert2.all.js"></script>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .navbar {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            z-index: 1;
+        }
+
+        .navbar-brand {
+            cursor: default;
+        }
+
+        .spinner-border {
+            top: 45%;
+            position: absolute !important;
+        }
+
+
+        .hidden {
+            display: none;
+        }
+
+        .col-6,
+        .col-lg-6,
+        .col-lg-12 {
+            padding: 5px !important;
+        }
+
+        .row {
+            margin: 10px
+        }
+
+        .chartTitle {
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        .linechart {
+            margin: 5px;
+            padding: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);
+            border-radius: 5px;
+        }
+
+        .border {
+            border: 2px solid rgb(40, 167, 69) !important;
+        }
+
+        .top {
+            margin-top: 70px !important;
+        }
+
+        canvas {
+            max-height: 500px !important;
+        }
+
+        .center {
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-success">
+        <div class="navbar-brand" href="#">Dashboard</div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">District Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/push">Push Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users">User Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/items">Market Place</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tools">Rent a Tool</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/lands">Lend a Land</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" id="form">
+                <Select class="form-control mr-sm-2" id="district" name="district" aria-label="District Selection">
+                    <option value="Kasargod">Kasargod</option>
+                    <option value="Kannur">Kannur</option>
+                    <option value="Wayanad">Wayanad</option>
+                    <option value="Palakkad">Palakkad</option>
+                    <option value="Kozhikode">Kozhikode</option>
+                    <option value="Malappuram">Malappuram</option>
+                    <option value="Thrissur">Thrissur</option>
+                    <option value="Ernakulam">Ernakulam</option>
+                    <option value="Idukki" selected>Idukki</option>
+                    <option value="Alappuzha">Alappuzha</option>
+                    <option value="Kottayam">Kottayam</option>
+                    <option value="Pathanamthitta">Pathanamthitta</option>
+                    <option value="Kollam">Kollam</option>
+                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                </Select>
+                <button class="btn bg-light text-success my-2 my-sm-0" type="submit">Go</button>
+            </form>
+        </div>
+    </nav>
+
+
+    <div class="center" id="noResult"></div>
+
+
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-success" style="width: 2.5rem; height: 2.5rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+
+    <div class="row charts hidden top">
+        <div class="col-lg-12">
+            <div class="linechart border">
+                <h4 class="chartTitle">Disease Statistics</h4>
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+<script>
+
+    var chart;
+
+    var district = "Idukki", disease = [], diseaseCount = [];
+
+    $(window).on('load', function () {
+
+        $.ajax({
+            type: "POST",
+            url: "/districtInfo",
+            data: { "district": "Idukki" },
+            success: function (data) {
+                console.log(data);
+                data = JSON.parse(data);
+                showChart(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+
+    });
+
+
+    $("#form").submit(function (e) {
+
+        if (!$(".row").hasClass("hidden")) {
+            $(".row").toggleClass("hidden");
+        }
+        $(".spinner-border").toggleClass("hidden");
+
+        district = $("#district").val();
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var form = $(this);
+
+        $.ajax({
+            type: "POST",
+            url: "/districtInfo",
+            data: form.serialize(),
+            success: function (data) {
+                console.log(data);
+                data = JSON.parse(data);
+                showChart(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+
+
+    });
+
+
+    function showChart(data) {
+
+        disease = [], diseaseCount = [];
+
+        if (data.length == 0) {
+            $("#noResult").html("Nothing to Show");
+            $(".spinner-border").toggleClass("hidden");
+            return;
+        }
+
+        $("#noResult").html("");
+
+
+
+        for (var i = 0; i < data.length; i++) {
+            disease[i] = data[i]["disease"];
+            diseaseCount[i] = data[i]["count"];
+        }
+
+        $(".spinner-border").toggleClass("hidden");
+        $(".row").toggleClass("hidden");
+
+        if (chart != null) {
+            chart.destroy();
+        }
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+        chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'bar',
+
+            // The data for our dataset
+            data: {
+                labels: disease,
+                datasets: [{
+                    label: "Count",
+                    backgroundColor: 'rgb(40, 167, 69,0.7)',
+                    borderColor: 'rgb(40, 167, 69)',
+                    data: diseaseCount
+                }]
+            },
+
+            // Configuration options go here
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: "Disease Statistics of " + district,
+                        maintainAspectRatio: true
+                    },
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    // callbacks: {
+                    //     label: function (t, d) {
+                    //         if (t.yield=='0') {
+                    //             return '0';
+                    //         }
+                    //         else{
+                    //             return t.yLabel;
+                    //         }
+
+                    //     }
+                    // }
+                }
+            }
+        });
+
+
+    }
+
+
+
+</script>
