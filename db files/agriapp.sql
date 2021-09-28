@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 25, 2021 at 07:00 PM
+-- Generation Time: Sep 28, 2021 at 11:31 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -129,7 +129,12 @@ CREATE TABLE `diseaseInfo` (
 INSERT INTO `diseaseInfo` (`id`, `disease`, `district`) VALUES
 (1, 1, 'Idukki'),
 (2, 2, 'Idukki'),
-(3, 30, 'Ernakulam');
+(3, 30, 'Ernakulam'),
+(4, 30, 'Ernakulam'),
+(5, 30, 'Ernakulam'),
+(6, 30, 'Ernakulam'),
+(7, 30, 'Ernakulam'),
+(8, 30, 'Ernakulam');
 
 -- --------------------------------------------------------
 
@@ -286,6 +291,7 @@ CREATE TABLE `users` (
   `id` int(255) NOT NULL,
   `name` varchar(100) NOT NULL,
   `phone` varchar(20) NOT NULL,
+  `place` text NOT NULL,
   `district` varchar(30) NOT NULL,
   `password` text NOT NULL,
   `joinDate` date NOT NULL
@@ -295,11 +301,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `phone`, `district`, `password`, `joinDate`) VALUES
-(1, 'Vishnu Murali', '9567836661', 'Ernakulam', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f', '2021-09-15'),
-(4, 'VM', '8086015448', 'Malappuram', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '2021-09-16'),
-(5, 'n', '1212', 'Ernakulam', 'hallellujah', '2021-09-16'),
-(7, 'VMVM', '1234567891', 'Ernakulam', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '2021-09-17');
+INSERT INTO `users` (`id`, `name`, `phone`, `place`, `district`, `password`, `joinDate`) VALUES
+(1, 'Vishnu Murali', '9567836661', 'Thevara1', 'Ernakulam', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f', '2021-09-15'),
+(5, 'n', '1212', 'Vipin', 'Ernakulam', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '2021-09-16'),
+(7, 'VMVM', '1234567891', 'Cochin-5', 'Ernakulam', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '2021-09-17');
 
 --
 -- Indexes for dumped tables
@@ -367,7 +372,7 @@ ALTER TABLE `chat`
 -- AUTO_INCREMENT for table `diseaseInfo`
 --
 ALTER TABLE `diseaseInfo`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `diseases`
@@ -403,7 +408,7 @@ ALTER TABLE `tools`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
