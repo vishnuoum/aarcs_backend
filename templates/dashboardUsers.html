@@ -150,11 +150,11 @@
         console.log(data);
 
         var temp;
-        var table = `<table id="users" class="display"><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Distirct</th><th>Join Date</th></tr></thead><tbody>`;
+        var table = `<table id="users" class="display"><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Place</th><th>Distirct</th><th>Join Date</th></tr></thead><tbody>`;
 
         for (var i = 0; i < data.length; i++) {
             temp = new Date(data[i]["joinDate"]);
-            table += `<tr id=" ${data[i]["id"]} "><td>${i + 1}</td><td>${data[i]["name"]}</td><td>${data[i]["phone"]}</td><td>${data[i]["district"]}</td><td>${temp.getDate() + "/" + String(parseInt(temp.getMonth()) + 1) + "/" + temp.getFullYear()}</td></tr>`;
+            table += `<tr id=" ${data[i]["id"]} "><td>${i + 1}</td><td>${data[i]["name"]}</td><td>${data[i]["phone"]}</td><td>${data[i]["place"]}</td><td>${data[i]["district"]}</td><td>${temp.getDate() + "/" + String(parseInt(temp.getMonth()) + 1) + "/" + temp.getFullYear()}</td></tr>`;
         }
 
         table += "</tbody></table>";

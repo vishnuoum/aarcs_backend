@@ -202,7 +202,7 @@ app.post("/addLand", upload.single('landPic'), (request, response) => {
 app.post("/signup", upload.none(), (request, response) => {
     console.log("Signup");
     if (otp[request.body.phone] == request.body.otp) {
-        connection.query("Insert into users Values(NULL,?,?,?,sha2(?,256),now())", [request.body.name, request.body.phone, request.body.district, request.body.password], function (error, result) {
+        connection.query("Insert into users Values(NULL,?,?,?,?,sha2(?,256),now())", [request.body.name, request.body.phone, request.body.place, request.body.district, request.body.password], function (error, result) {
             if (error == null) {
                 console.log("Signup done OTP:", otp[request.body.phone]);
                 response.end("done");
@@ -241,7 +241,7 @@ app.post("/login", upload.none(), (request, response) => {
 
 app.post("/getProfile", upload.none(), (request, response) => {
     console.log("get profile");
-    connection.query("Select sha2(id,256) as id,name,district from users where phone=?", [request.body.phone], function (error, result) {
+    connection.query("Select sha2(id,256) as id,name,place,district from users where phone=?", [request.body.phone], function (error, result) {
         if (error == null) {
             console.log("get Profile done:");
             response.end(JSON.stringify(result));
@@ -258,7 +258,7 @@ app.post("/getProfile", upload.none(), (request, response) => {
 // edit profile
 app.post("/editProfile", upload.none(), (request, response) => {
     console.log("edit profile");
-    connection.query("Update users set name=?,phone=?,district=? where sha2(id,256) = ?", [request.body.name, request.body.phone, request.body.district, request.body.id], function (error, result) {
+    connection.query("Update users set name=?,phone=?,place=?,district=? where sha2(id,256) = ?", [request.body.name, request.body.phone, request.body.place, request.body.district, request.body.id], function (error, result) {
         if (error == null) {
             console.log("edit Profile done:");
             response.end("done");
@@ -608,7 +608,7 @@ app.get('/homeInfo', upload.none(), function (request, response) {
 
 
 
-// dashboard district info
+// get district info
 app.post('/districtInfo', upload.none(), function (request, response) {
     if (request.cookies["status"] == "lsjfklsdkflsdkfldksf'")
         connection.query('Select sha2(t1.id,256) as id,t2.disease,(Select count(id) from diseaseInfo where disease=t1.disease) as count from diseaseInfo t1 inner join diseases t2 on t1.disease=t2.id where t1.district=?', [request.body.district], function (error, results) {
@@ -625,10 +625,10 @@ app.post('/districtInfo', upload.none(), function (request, response) {
 
 
 
-// dashboard users info
+// get users info
 app.get('/usersInfo', upload.none(), function (request, response) {
     if (request.cookies["status"] == "lsjfklsdkflsdkfldksf'")
-        connection.query('Select sha2(id,256) as id,name,phone,district,joinDate from users', function (error, results) {
+        connection.query('Select sha2(id,256) as id,name,phone,place,district,joinDate from users', function (error, results) {
             if (error == null) {
                 response.end(JSON.stringify(results));
             }
