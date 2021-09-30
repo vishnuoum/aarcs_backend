@@ -243,7 +243,7 @@ app.post("/getProfile", upload.none(), (request, response) => {
     console.log("get profile");
     connection.query("Select sha2(id,256) as id,name,place,district from users where phone=?", [request.body.phone], function (error, result) {
         if (error == null) {
-            console.log("get Profile done:");
+            console.log("get Profile done:", JSON.stringify(result));
             response.end(JSON.stringify(result));
         }
         else {
