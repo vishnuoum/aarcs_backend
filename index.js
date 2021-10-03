@@ -19,6 +19,7 @@ app.set('view engine', 'ejs');
 
 const { request } = require("http");
 const { response, query } = require("express");
+const { data } = require("@tensorflow/tfjs");
 
 const idir = './itemPics';
 const tdir = './toolPics';
@@ -445,6 +446,48 @@ app.post("/analyticsInfo", upload.none(), (request, response) => {
                     console.log("error1", error1);
                 }
             });
+        }
+        else {
+            response.end("error");
+            console.log("error", error);
+        }
+    });
+});
+
+
+// get weather
+app.post("/getWeather", upload.none(), (request, response) => {
+    console.log(request.body);
+    connection.query("Select place,district from users where phone=?", [request.body.phone], function (error, result) {
+        if (error == null && result.length != 0) {
+            try {
+                url = `https://api.openweathermap.org/data/2.5/weather?q=${result[0]["district"]}&appid=3e49c92d00ef74b551e18e915b9c9fa7`;
+                https.get(url, (resp) => {
+                    let data = '';
+
+                    // A chunk of data has been received.
+                    resp.on('data', (chunk) => {
+                        data += chunk;
+                    });
+
+                    // The whole response has been received. Print out the result.
+                    resp.on('end', () => {
+                        if (resp.statusCode == 200) {
+                            response.end(data);
+                        }
+                        else {
+                            response.end("error");
+                        }
+                    });
+
+                }).on("error", (err) => {
+                    console.log("Error: " + err.message);
+                    response.end("error");
+                });
+            } catch (e) {
+                console.log(e);
+                response.end("error parse");
+            }
         }
         else {
             response.end("error");
