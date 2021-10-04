@@ -497,6 +497,48 @@ app.post("/getWeather", upload.none(), (request, response) => {
 });
 
 
+// recommendation
+app.post("/recommend", upload.none(), (request, response) => {
+
+    const http = require("http");
+    var data = "";
+
+    const options = {
+        hostname: '127.0.0.1',
+        port: 3001,
+        path: `/recommend?N=${request.body.N}&K=${request.body.K}&P=${request.body.P}&humidity=${request.body.humidity}&temperature=${request.body.temperature}&rainfall=${request.body.rainfall}&ph=${request.body.ph}`,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }
+
+    const req = http.request(options, res => {
+        console.log(`statusCode: ${res.statusCode}`)
+
+        res.on('data', d => {
+            data = data + d;
+        })
+
+        res.on('end', () => {
+            if (res.statusCode == 200) {
+                console.log(data);
+                response.end(data);
+            }
+            else {
+                response.end("error");
+            }
+        });
+    })
+
+    req.on('error', error => {
+        console.error(error)
+    })
+
+    req.end()
+});
+
+
 
 // socket programming
 io.on('connection', (socket) => {
