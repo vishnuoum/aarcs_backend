@@ -418,7 +418,7 @@ app.post("/editUserLand", upload.none(), (request, response) => {
 app.post("/getMessages", upload.none(), (request, response) => {
     console.log("get messages", request.body);
     var query = connection.query("select t1.id,COALESCE((Select 'You' from users where phone=? and id=t2.id),t2.name) as sender,t1.message,t1.dateTime from chat t1 inner join (Select id,name from users) t2 on t1.user=t2.id order by t1.id desc", [request.body.phone], function (error, result) {
-        if (error == null && result.length != 0) {
+        if (error == null) {
             console.log("get messages done:");
             response.end(JSON.stringify(result));
         }
