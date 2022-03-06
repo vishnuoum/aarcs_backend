@@ -111,7 +111,7 @@ app.get("/getItems", upload.none(), (request, response) => {
 app.post("/addItem", upload.single('itemPic'), (request, response) => {
     console.log("Add to Market Place");
     console.log(request.body);
-    connection.query("Insert into items Values(NULL,?,?,?,?,now(),(Select id from users where phone=?),concat('http://10.0.2.2:3000/itemPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into items Values(NULL,?,?,?,?,now(),(Select id from users where phone=?),concat('http://192.168.18.2:3000/itemPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add to Market place done");
             response.end("done");
@@ -148,7 +148,7 @@ app.get("/getTools", upload.none(), (request, response) => {
 // add Tool
 app.post("/addTool", upload.single('toolPic'), (request, response) => {
     console.log("Add to Market Place");
-    connection.query("Insert into tools Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://10.0.2.2:3000/toolPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into tools Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.2:3000/toolPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add to Market place done");
             response.end("done");
@@ -185,7 +185,7 @@ app.get("/getLands", upload.none(), (request, response) => {
 // add lands
 app.post("/addLand", upload.single('landPic'), (request, response) => {
     console.log("Add land");
-    connection.query("Insert into lands Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://10.0.2.2:3000/landPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into lands Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.2:3000/landPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add land done");
             response.end("done");
@@ -417,7 +417,7 @@ app.post("/editUserLand", upload.none(), (request, response) => {
 // get messages
 app.post("/getMessages", upload.none(), (request, response) => {
     console.log("get messages", request.body);
-    var query = connection.query("select t1.id,COALESCE((Select 'You' from users where phone=? and id=t2.id),t2.name) as sender,t1.message,t1.dateTime from chat t1 inner join (Select id,name from users) t2 on t1.user=t2.id order by t1.id desc", [request.body.phone], function (error, result) {
+    var query = connection.query("select t1.id,COALESCE((Select 'You' from users where phone=? and id=t2.id),t2.name) as sender,t1.message,t1.dateTime from chat t1 inner join (Select id,name from users) t2 on t1.user=t2.id order by t1.id asc", [request.body.phone], function (error, result) {
         if (error == null) {
             console.log("get messages done:");
             response.end(JSON.stringify(result));
@@ -586,7 +586,7 @@ app.get('/login', upload.none(), function (request, response) {
 // validate
 app.post('/validate', upload.none(), function (request, response) {
     console.log(request.body);
-    if (request.body.phone = "=1234567890" && request.body.password == "123") {
+    if (request.body.phone == "1234567890" && request.body.password == "123") {
         response.cookie('status', "lsjfklsdkflsdkfldksf'", { maxAge: Date.now() + 900000, httpOnly: true });
         response.end("done");
     }
@@ -907,6 +907,6 @@ app.get('/notificationsInfo', upload.none(), function (request, response) {
 
 
 // start the server
-http.listen(3000, function () {
+http.listen(3000, "192.168.18.2", function () {
     console.log("Listening on*:3000");
 });
