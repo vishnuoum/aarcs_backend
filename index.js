@@ -303,6 +303,54 @@ app.post("/getOTP", upload.none(), (request, response) => {
         otp[request.body.phone] = Math.floor(Math.random() * 900000) + 100000;;
     }
     console.log(otp[request.body.phone]);
+    if (request.body.phone != undefined) {
+
+        var message = {
+            app_id: "9a34fce0-8e58-42af-b1bf-217caa61de6f",
+            name: Date.now().toString(),
+            sms_from: "(307) 438-8637",
+            contents: { "en": 'Your OTP is ' + otp[request.body.phone] },
+            include_phone_numbers: ["+91" + request.body.phone],
+        };
+
+        var headers = {
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": "Basic NDdkZjBlYTUtMmE2Yi00NTMzLWJjNjUtMDliNDEyZWNmMzll"
+        };
+
+        var options = {
+            host: "onesignal.com",
+            port: 443,
+            path: "/api/v1/notifications",
+            method: "POST",
+            headers: headers
+        };
+
+
+        var req = https.request(options, function (res) {
+            res.on('data', function (data) {
+                console.log("Response:\n", JSON.parse(data));
+                if (JSON.parse(data)["error"] === undefined) {
+                    console.log("done");
+                }
+                else {
+                    console.log("error");
+                }
+            });
+        });
+
+        req.on('error', function (e) {
+            console.log("ERROR:");
+            console.log(e);
+            response.end("error");
+        });
+
+        req.write(JSON.stringify(message));
+        req.end();
+    }
+    else {
+        response.end("No Authorization");
+    }
 });
 
 
