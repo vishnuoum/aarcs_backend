@@ -586,6 +586,22 @@ app.post("/recommend", upload.none(), (request, response) => {
     req.end()
 });
 
+// gauthenticate
+app.post("/authenticate", upload.none(), (request, response) => {
+    console.log("authenticate");
+    connection.query("Select 'done' as done from users where phone=?", [request.body.phone], function (error, result) {
+        if (error == null && result.length != 0) {
+            console.log(result);
+            response.end("done");
+        }
+        else {
+            console.log(error);
+            response.end("error");
+        }
+        console.log("authenticate mysql error: ", error);
+    });
+});
+
 
 
 // socket programming
