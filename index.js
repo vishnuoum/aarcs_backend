@@ -12,6 +12,7 @@ app.use('/profilePics', express.static('profilePics'));
 app.use('/itemPics', express.static('itemPics'));
 app.use('/toolPics', express.static('toolPics'));
 app.use('/landPics', express.static('landPics'));
+app.use('/askPics', express.static('askPics'));
 app.use('/templates', express.static('templates'));
 
 app.set('view engine', 'ejs');
@@ -24,6 +25,7 @@ const { data } = require("@tensorflow/tfjs");
 const idir = './itemPics';
 const tdir = './toolPics';
 const ldir = './landPics';
+const adir = './askPics';
 
 var otp = {};
 
@@ -38,6 +40,9 @@ var assign = multer.diskStorage({
         }
         else if (file.fieldname === "landPic") {
             cb(null, ldir);
+        }
+        else if (file.fieldname === "askPic") {
+            cb(null, adir);
         }
 
     },
@@ -586,7 +591,7 @@ app.post("/recommend", upload.none(), (request, response) => {
     req.end()
 });
 
-// gauthenticate
+// authenticate
 app.post("/authenticate", upload.none(), (request, response) => {
     console.log("authenticate");
     connection.query("Select 'done' as done from users where phone=?", [request.body.phone], function (error, result) {
@@ -599,6 +604,40 @@ app.post("/authenticate", upload.none(), (request, response) => {
             response.end("error");
         }
         console.log("authenticate mysql error: ", error);
+    });
+});
+
+// ask Community
+app.post("/askCommunity", upload.single('askPic'), (request, response) => {
+    console.log("Ask Community");
+    console.log(request.body);
+    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.2:3000/askPics/',?),(Select id from users where phone=?))", [request.body.query, request.body.description, request.file.filename, request.body.phone], function (error, result) {
+        if (error == null) {
+            console.log("Add Community done");
+            response.end("done");
+        }
+        else {
+            console.log("Ask Community error");
+            response.end("error");
+        }
+        console.log("Ask Community error: ", error);
+    });
+});
+
+// ask Community
+app.post("/showCommunity", upload.none(), (request, response) => {
+    console.log("show Community");
+    console.log(request.body);
+    connection.query("Select id,query,description,pic,datetime,(Select name from users where id=userId) as username,(Select district from users where id=userId) as district, coalesce((Select count(id) from answers where doubtId=doubts.id),0) as answers from doubts order by datetime desc", [], function (error, result) {
+        if (error == null) {
+            console.log("Show Community done");
+            response.end(JSON.stringify(result));
+        }
+        else {
+            console.log("Show Community error");
+            response.end("error");
+        }
+        console.log("Show Community error: ", error);
     });
 });
 

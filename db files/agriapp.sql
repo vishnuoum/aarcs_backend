@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 06, 2022 at 03:42 PM
+-- Generation Time: Apr 19, 2022 at 07:43 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -20,6 +20,20 @@ SET time_zone = "+00:00";
 --
 -- Database: `agriapp`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `answers`
+--
+
+CREATE TABLE `answers` (
+  `id` int(255) NOT NULL,
+  `answer` text NOT NULL,
+  `datetime` datetime NOT NULL DEFAULT current_timestamp(),
+  `doubtId` int(255) NOT NULL,
+  `userId` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -49,7 +63,13 @@ INSERT INTO `chat` (`id`, `user`, `message`, `dateTime`) VALUES
 (82, 1, 'Zxtya77mH00g0duhOeM3TQ==', '2022-03-06 20:08:29'),
 (83, 1, 'ZRkaaL3lHE4j0tiiOuA0Tg==', '2022-03-06 20:08:29'),
 (84, 1, 'Zxpya77mH00g0duhOeM3TQ==', '2022-03-06 20:08:41'),
-(85, 1, 'ZxYQCd/jGkgl1N6kPOYySA==', '2022-03-06 20:08:47');
+(85, 1, 'ZxYQCd/jGkgl1N6kPOYySA==', '2022-03-06 20:08:47'),
+(86, 1, 'ZxYFaL3lHE4j0tiiOuA0Tg==', '2022-03-19 08:35:42'),
+(87, 1, 'ZxpcEdiNYyYm192nP+UxSw==', '2022-03-19 08:50:32'),
+(88, 11, 'Zxpya77mH00g0duhOeM3TQ==', '2022-03-30 21:11:35'),
+(89, 1, 'ZxZya77mH00g0duhOeM3TQ==', '2022-03-30 21:11:54'),
+(90, 11, 'axIPaL3lHE4j0tiiOuA0Tg==', '2022-03-30 21:12:00'),
+(91, 1, 'ZxYQCd/jGkgl1N6kPOYySA==', '2022-04-17 15:46:46');
 
 -- --------------------------------------------------------
 
@@ -135,6 +155,29 @@ INSERT INTO `diseases` (`id`, `disease`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `doubts`
+--
+
+CREATE TABLE `doubts` (
+  `id` int(255) NOT NULL,
+  `query` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `pic` varchar(255) NOT NULL,
+  `userId` int(255) NOT NULL,
+  `datetime` datetime NOT NULL DEFAULT current_timestamp(),
+  `resolved` varchar(10) NOT NULL DEFAULT 'false'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `doubts`
+--
+
+INSERT INTO `doubts` (`id`, `query`, `description`, `pic`, `userId`, `datetime`, `resolved`) VALUES
+(1, 'What is happening to my plant?', 'What is happening to my plant?', 'http://192.168.18.46:3000/askPics/1.jpg', 1, '2022-04-19 19:53:41', 'false');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `items`
 --
 
@@ -154,11 +197,11 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`id`, `name`, `price`, `place`, `district`, `dateTime`, `user`, `pic`) VALUES
-(1, 'Tomat10', '15', 'Irinjalakuda', 'Alappuzha', '2021-09-15 00:50:13', 1, 'http://192.168.18.2:3000/itemPics/1_1.jpg'),
-(2, 'Tomato', '25', 'Irinjalakuda', 'Thrissur', '2021-09-15 09:24:33', 1, 'http://192.168.18.2:3000/itemPics/6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b1_1.jpg'),
-(3, 'Potato', '12', 'Irinjalakuda', 'Irinjalakuda', '2021-09-16 03:40:47', 5, 'http://192.168.18.2:3000/itemPics/undefined30244186-e70d-40a6-9795-13603ba96b2e9154420335646437379.jpg'),
-(4, 'Ginger', '300', 'Puthenchira', 'Puthenchira', '2021-09-16 03:53:46', 5, 'http://192.168.18.2:3000/itemPics/12120d0b4fb5-2ef7-4793-95cf-6de787fdc883993541812850590885.jpg'),
-(5, 'hsdfdsf', '12', 'dfg', 'dfg', '2021-09-16 03:55:07', 5, 'http://192.168.18.2:3000/itemPics/1212a11d45e4-5ab2-4eac-a0f4-ce516ff982263836378473167278242.jpg');
+(1, 'Tomat', '15', 'Irinjalakuda', 'Thrissur', '2021-09-15 00:50:13', 1, 'http://192.168.18.46:3000/itemPics/1_1.jpg'),
+(2, 'Tomato', '25', 'Irinjalakuda', 'Thrissur', '2021-09-15 09:24:33', 1, 'http://192.168.18.46:3000/itemPics/6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b1_1.jpg'),
+(3, 'Potato', '12', 'Irinjalakuda', 'Irinjalakuda', '2021-09-16 03:40:47', 5, 'http://192.168.18.46:3000/itemPics/undefined30244186-e70d-40a6-9795-13603ba96b2e9154420335646437379.jpg'),
+(4, 'Ginger', '300', 'Puthenchira', 'Puthenchira', '2021-09-16 03:53:46', 5, 'http://192.168.18.46:3000/itemPics/12120d0b4fb5-2ef7-4793-95cf-6de787fdc883993541812850590885.jpg'),
+(5, 'hsdfdsf', '12', 'dfg', 'dfg', '2021-09-16 03:55:07', 5, 'http://192.168.18.46:3000/itemPics/1212a11d45e4-5ab2-4eac-a0f4-ce516ff982263836378473167278242.jpg');
 
 -- --------------------------------------------------------
 
@@ -205,7 +248,8 @@ CREATE TABLE `notifications` (
 
 INSERT INTO `notifications` (`id`, `label`, `title`, `content`, `dateTime`, `status`) VALUES
 (1, 'Weather', 'Hello', 'hai', '2021-09-25 20:17:37', 'success'),
-(2, 'Push', '123123', '12', '2021-09-25 20:35:32', 'success');
+(2, 'Push', '123123', '12', '2021-09-25 20:35:32', 'success'),
+(3, 'Alert', 'Alert', 'Alert', '2022-03-19 08:51:56', 'success');
 
 -- --------------------------------------------------------
 
@@ -232,7 +276,8 @@ INSERT INTO `tools` (`id`, `name`, `price`, `place`, `district`, `user`, `pic`) 
 (2, 'Tiller0', '2500', 'Irinjalakuda', 'Thrissur', 1, 'http://192.168.18.2:3000/toolPics/6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b1_1.jpg'),
 (3, 'Harvester', '5000', 'Ijk', 'Ijk', 5, 'http://192.168.18.2:3000/toolPics/1212cec34d0b-44a3-4bc7-a139-22a6ad6d09aa7555001925506696534.jpg'),
 (4, 'Plougher', '200', 'IJK', 'IJK', 5, 'http://192.168.18.2:3000/toolPics/1212c74e3237-c721-4b6e-b9bf-71b80cc1f03a3066167305014958557.jpg'),
-(5, 'fdfxgdfg', '45', 'dfgfd', 'dfgfd', 5, 'http://192.168.18.2:3000/toolPics/1212bfdb5794-9b63-4ad4-b8f9-7c2e09e20903601570641905937318.jpg');
+(5, 'fdfxgdfg', '45', 'dfgfd', 'dfgfd', 5, 'http://192.168.18.2:3000/toolPics/1212bfdb5794-9b63-4ad4-b8f9-7c2e09e20903601570641905937318.jpg'),
+(6, 'Tiler', '500', 'Irinjalakuda', 'Thrissur', 1, 'http://192.168.18.2:3000/toolPics/9567836661a342c136-e97d-4e8b-97ac-bb63b879c31f7730128310056093557.jpg');
 
 -- --------------------------------------------------------
 
@@ -255,14 +300,21 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `phone`, `place`, `district`, `password`, `joinDate`) VALUES
-(1, 'Vishnu Murali', '9567836661', 'Thevara', 'Ernakulam', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225', '2021-09-15'),
+(1, 'Vishnu Murali', '9567836661', 'Vadanappally', 'Thrissur', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f', '2021-09-15'),
 (5, 'n', '1212', 'Vipin', 'Ernakulam', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '2021-09-16'),
 (7, 'VMVM', '1234567891', 'Cochin-5', 'Ernakulam', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '2021-09-17'),
-(10, 'V', '1231231231', 'Irinjalakuda', 'Thrissur', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '2021-10-11');
+(10, 'V', '1231231231', 'Irinjalakuda', 'Thrissur', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '2021-10-11'),
+(11, 'Das', '9876543210', 'Nattika', 'Thrissur', '932f3c1b56257ce8539ac269d7aab42550dacf8818d075f0bdf1990562aae3ef', '2022-03-30');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `answers`
+--
+ALTER TABLE `answers`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `chat`
@@ -280,6 +332,12 @@ ALTER TABLE `diseaseInfo`
 -- Indexes for table `diseases`
 --
 ALTER TABLE `diseases`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `doubts`
+--
+ALTER TABLE `doubts`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -317,10 +375,16 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `answers`
+--
+ALTER TABLE `answers`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `chat`
 --
 ALTER TABLE `chat`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- AUTO_INCREMENT for table `diseaseInfo`
@@ -333,6 +397,12 @@ ALTER TABLE `diseaseInfo`
 --
 ALTER TABLE `diseases`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+
+--
+-- AUTO_INCREMENT for table `doubts`
+--
+ALTER TABLE `doubts`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `items`
@@ -350,19 +420,19 @@ ALTER TABLE `lands`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tools`
 --
 ALTER TABLE `tools`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
