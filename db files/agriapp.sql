@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 19, 2022 at 07:43 PM
+-- Generation Time: Apr 20, 2022 at 05:12 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -34,6 +34,21 @@ CREATE TABLE `answers` (
   `doubtId` int(255) NOT NULL,
   `userId` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `answers`
+--
+
+INSERT INTO `answers` (`id`, `answer`, `datetime`, `doubtId`, `userId`) VALUES
+(1, 'Hi, hello', '2022-04-20 18:30:47', 1, 1),
+(2, 'hello', '2022-04-20 18:59:03', 1, 1),
+(3, 'hello', '2022-04-20 19:07:06', 1, 1),
+(4, 'Any one?', '2022-04-20 20:07:41', 2, 1),
+(5, 'no', '2022-04-20 20:31:01', 2, 1),
+(6, 'hi', '2022-04-20 20:33:01', 2, 1),
+(7, 'hi', '2022-04-20 20:33:44', 2, 1),
+(8, 'gg', '2022-04-20 20:34:03', 1, 1),
+(9, 'vv', '2022-04-20 20:34:21', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -165,7 +180,7 @@ CREATE TABLE `doubts` (
   `pic` varchar(255) NOT NULL,
   `userId` int(255) NOT NULL,
   `datetime` datetime NOT NULL DEFAULT current_timestamp(),
-  `resolved` varchar(10) NOT NULL DEFAULT 'false'
+  `resolved` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -173,7 +188,8 @@ CREATE TABLE `doubts` (
 --
 
 INSERT INTO `doubts` (`id`, `query`, `description`, `pic`, `userId`, `datetime`, `resolved`) VALUES
-(1, 'What is happening to my plant?', 'What is happening to my plant?', 'http://192.168.18.46:3000/askPics/1.jpg', 1, '2022-04-19 19:53:41', 'false');
+(1, 'What is happening to my plant?', 'What is happening to my plant?', 'http://192.168.18.46:3000/askPics/1.jpg', 11, '2022-04-19 19:53:41', '1'),
+(2, 'How to solve?', 'Can any please help me to solve this issues? I need help as soon as possible. My yield is down!!!!!', 'http://192.168.18.46:3000/askPics/9567836661930b4422-6b47-44b8-a58e-0bff0970a3174970002697806678067.jpg', 1, '2022-04-20 19:39:11', '4');
 
 -- --------------------------------------------------------
 
@@ -378,7 +394,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `answers`
 --
 ALTER TABLE `answers`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `chat`
@@ -402,7 +418,7 @@ ALTER TABLE `diseases`
 -- AUTO_INCREMENT for table `doubts`
 --
 ALTER TABLE `doubts`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `items`

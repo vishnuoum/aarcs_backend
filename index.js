@@ -116,7 +116,7 @@ app.get("/getItems", upload.none(), (request, response) => {
 app.post("/addItem", upload.single('itemPic'), (request, response) => {
     console.log("Add to Market Place");
     console.log(request.body);
-    connection.query("Insert into items Values(NULL,?,?,?,?,now(),(Select id from users where phone=?),concat('http://192.168.18.2:3000/itemPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into items Values(NULL,?,?,?,?,now(),(Select id from users where phone=?),concat('http://192.168.18.46:3000/itemPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add to Market place done");
             response.end("done");
@@ -153,7 +153,7 @@ app.get("/getTools", upload.none(), (request, response) => {
 // add Tool
 app.post("/addTool", upload.single('toolPic'), (request, response) => {
     console.log("Add to Market Place");
-    connection.query("Insert into tools Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.2:3000/toolPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into tools Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.46:3000/toolPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add to Market place done");
             response.end("done");
@@ -190,7 +190,7 @@ app.get("/getLands", upload.none(), (request, response) => {
 // add lands
 app.post("/addLand", upload.single('landPic'), (request, response) => {
     console.log("Add land");
-    connection.query("Insert into lands Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.2:3000/landPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into lands Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.46:3000/landPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add land done");
             response.end("done");
@@ -611,7 +611,7 @@ app.post("/authenticate", upload.none(), (request, response) => {
 app.post("/askCommunity", upload.single('askPic'), (request, response) => {
     console.log("Ask Community");
     console.log(request.body);
-    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.2:3000/askPics/',?),(Select id from users where phone=?))", [request.body.query, request.body.description, request.file.filename, request.body.phone], function (error, result) {
+    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.46:3000/askPics/',?),(Select id from users where phone=?))", [request.body.query, request.body.description, request.file.filename, request.body.phone], function (error, result) {
         if (error == null) {
             console.log("Add Community done");
             response.end("done");
@@ -628,7 +628,7 @@ app.post("/askCommunity", upload.single('askPic'), (request, response) => {
 app.post("/showCommunity", upload.none(), (request, response) => {
     console.log("show Community");
     console.log(request.body);
-    connection.query("Select id,query,description,pic,datetime,(Select name from users where id=userId) as username,(Select district from users where id=userId) as district, coalesce((Select count(id) from answers where doubtId=doubts.id),0) as answers from doubts order by datetime desc", [], function (error, result) {
+    connection.query("Select id,query,description,resolved,pic,datetime,(Select name from users where id=userId) as username,(Select district from users where id=userId) as district, coalesce((Select count(id) from answers where doubtId=doubts.id),0) as answers from doubts where not userId = (select id from users where phone=?) order by datetime desc", [request.body.phone], function (error, result) {
         if (error == null) {
             console.log("Show Community done");
             response.end(JSON.stringify(result));
@@ -638,6 +638,76 @@ app.post("/showCommunity", upload.none(), (request, response) => {
             response.end("error");
         }
         console.log("Show Community error: ", error);
+    });
+});
+
+// community Answers
+app.post("/answers", upload.none(), (request, response) => {
+    console.log("answers Community");
+    console.log(request.body);
+    connection.query("Select id,answer,datetime,(Select if(strcmp(phone,?)=0,'You',name) from users where id=answers.userId) as username, (Select district from users where id=answers.userId) as district from answers where doubtId=?", [request.body.phone, request.body.id], function (error, result) {
+        if (error == null) {
+            console.log("Answers Community done");
+            response.end(JSON.stringify(result));
+        }
+        else {
+            console.log("Answers Community error");
+            response.end("error");
+        }
+        console.log("Answers Community error: ", error);
+    });
+});
+
+
+// post Answer
+app.post("/postAnswer", upload.none(), (request, response) => {
+    console.log("post answers Community");
+    console.log(request.body);
+    connection.query("Insert into answers(id,answer,doubtId,userId) Values(NULL,?,?,(Select id from users where phone=?))", [request.body.answer, request.body.id, request.body.phone], function (error, result) {
+        if (error == null) {
+            console.log("Answers Community done");
+            response.end("done");
+        }
+        else {
+            console.log("Answers Community error");
+            response.end("error");
+        }
+        console.log("Answers Community error: ", error);
+    });
+});
+
+
+// my Queries
+app.post("/myQuery", upload.none(), (request, response) => {
+    console.log("my query Community");
+    console.log(request.body);
+    connection.query("Select id,query,description,resolved,pic,datetime,coalesce((Select count(id) from answers where doubtId=doubts.id),0) as answers from doubts where userId = (select id from users where phone=?) order by datetime desc", [request.body.phone], function (error, result) {
+        if (error == null) {
+            console.log("my query done");
+            response.end(JSON.stringify(result));
+        }
+        else {
+            console.log("my query error");
+            response.end("error");
+        }
+        console.log("my query error: ", error);
+    });
+});
+
+// my Queries
+app.post("/markAnswer", upload.none(), (request, response) => {
+    console.log("my answer Community");
+    console.log(request.body);
+    connection.query("Update doubts set resolved=? where id=?", [request.body.id, request.body.doubtId], function (error, result) {
+        if (error == null) {
+            console.log("my answer done");
+            response.end("done");
+        }
+        else {
+            console.log("my answer error");
+            response.end("error");
+        }
+        console.log("my answer error: ", error);
     });
 });
 
