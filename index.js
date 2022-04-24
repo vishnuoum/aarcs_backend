@@ -611,7 +611,7 @@ app.post("/authenticate", upload.none(), (request, response) => {
 app.post("/askCommunity", upload.single('askPic'), (request, response) => {
     console.log("Ask Community");
     console.log(request.body);
-    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.46:3000/askPics/',?),(Select id from users where phone=?))", [request.body.query, request.body.description, request.file.filename, request.body.phone], function (error, result) {
+    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.46:3000/askPics/',?),(Select id from users where phone=?)); Select phone from users where not phone = ?;", [request.body.query, request.body.description, request.file.filename, request.body.phone, request.body.phone], function (error, result) {
         if (error == null) {
             console.log("Add Community done");
             response.end("done");
@@ -663,10 +663,57 @@ app.post("/answers", upload.none(), (request, response) => {
 app.post("/postAnswer", upload.none(), (request, response) => {
     console.log("post answers Community");
     console.log(request.body);
-    connection.query("Insert into answers(id,answer,doubtId,userId) Values(NULL,?,?,(Select id from users where phone=?))", [request.body.answer, request.body.id, request.body.phone], function (error, result) {
+    connection.query("Insert into answers(id,answer,doubtId,userId) Values(NULL,?,?,(Select id from users where phone=?)); Select query,(Select phone from users where id=userId) as phone, (Select name from users where phone=?) as username from doubts where id=?", [request.body.answer, request.body.id, request.body.phone, request.body.phone, request.body.id], function (error, result) {
         if (error == null) {
             console.log("Answers Community done");
             response.end("done");
+            console.log(result[1][0])
+            var message = {
+                app_id: "9a34fce0-8e58-42af-b1bf-217caa61de6f",
+                contents: { "en": `${result[1][0]["username"]} responded to your query "${result[1][0]["query"]}"` },
+                headings: { "en": "Query Response" },
+                include_external_user_ids: [result[1][0]["phone"]],
+                channel_for_external_user_ids: "push",
+            };
+
+            console.log(message)
+
+            var headers = {
+                "Content-Type": "application/json; charset=utf-8",
+                "Authorization": "Basic NDdkZjBlYTUtMmE2Yi00NTMzLWJjNjUtMDliNDEyZWNmMzll"
+            };
+
+            var options = {
+                host: "onesignal.com",
+                port: 443,
+                path: "/api/v1/notifications",
+                method: "POST",
+                headers: headers
+            };
+
+
+            var req = https.request(options, function (res) {
+                res.on('data', function (data) {
+                    console.log("Response:\n", JSON.parse(data));
+                    connection.query('Insert into notifications Values(NULL,?,?,?,NOW(),?)', [request.body.label, request.body.title, request.body.content, JSON.parse(data)["error"] === undefined ? "success" : "failure"], function (error, results) { });
+                    if (JSON.parse(data)["error"] === undefined) {
+                        response.end("done");
+                    }
+                    else {
+                        response.end("error");
+                    }
+                });
+            });
+
+            req.on('error', function (e) {
+                console.log("ERROR:");
+                console.log(e);
+                response.end("error");
+            });
+
+            req.write(JSON.stringify(message));
+            req.end();
+
         }
         else {
             console.log("Answers Community error");
@@ -723,7 +770,7 @@ io.on('connection', (socket) => {
 
     socket.on('message', (data) => {
         console.log('message: ' + data["message"]);
-        // socket.broadcast.emit('message', data);
+
         var date = new Date();
         connection.query('Insert into chat values(NULL,(Select id from users where phone=?),?,?); Select name from users where phone=?', [data["sender"], data["message"], date, data["sender"]], function (error, results) {
             if (error == null) {
@@ -732,7 +779,8 @@ io.on('connection', (socket) => {
                 data["sender"] = results[1][0]["name"];
                 data["dateTime"] = date;
                 console.log(date);
-                io.emit('message', data);
+                // io.emit('message', data);
+                socket.broadcast.emit('message', data);
             }
             else {
                 console.log(error);
