@@ -611,10 +611,59 @@ app.post("/authenticate", upload.none(), (request, response) => {
 app.post("/askCommunity", upload.single('askPic'), (request, response) => {
     console.log("Ask Community");
     console.log(request.body);
-    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.46:3000/askPics/',?),(Select id from users where phone=?)); Select phone from users where not phone = ?;", [request.body.query, request.body.description, request.file.filename, request.body.phone, request.body.phone], function (error, result) {
+    var arr = []
+    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.46:3000/askPics/',?),(Select id from users where phone=?)); Select phone from users where not phone = ?; Select name from users where phone=?", [request.body.query, request.body.description, request.file.filename, request.body.phone, request.body.phone, request.body.phone], function (error, result) {
         if (error == null) {
             console.log("Add Community done");
             response.end("done");
+            for (var i = 0; i < result[1].length; i++) {
+                arr.push(result[1][i]["phone"])
+            }
+            var message = {
+                app_id: "9a34fce0-8e58-42af-b1bf-217caa61de6f",
+                contents: { "en": `${result[2][0]["name"]} posted a query` },
+                headings: { "en": "Query Posted" },
+                include_external_user_ids: arr,
+                channel_for_external_user_ids: "push",
+            };
+
+            console.log(message)
+
+            var headers = {
+                "Content-Type": "application/json; charset=utf-8",
+                "Authorization": "Basic NDdkZjBlYTUtMmE2Yi00NTMzLWJjNjUtMDliNDEyZWNmMzll"
+            };
+
+            var options = {
+                host: "onesignal.com",
+                port: 443,
+                path: "/api/v1/notifications",
+                method: "POST",
+                headers: headers
+            };
+
+
+            var req = https.request(options, function (res) {
+                res.on('data', function (data) {
+                    console.log("Response:\n", JSON.parse(data));
+                    connection.query('Insert into notifications Values(NULL,?,?,?,NOW(),?)', [request.body.label, request.body.title, request.body.content, JSON.parse(data)["error"] === undefined ? "success" : "failure"], function (error, results) { });
+                    if (JSON.parse(data)["error"] === undefined) {
+                        response.end("done");
+                    }
+                    else {
+                        response.end("error");
+                    }
+                });
+            });
+
+            req.on('error', function (e) {
+                console.log("ERROR:");
+                console.log(e);
+                response.end("error");
+            });
+
+            req.write(JSON.stringify(message));
+            req.end();
         }
         else {
             console.log("Ask Community error");
@@ -667,52 +716,54 @@ app.post("/postAnswer", upload.none(), (request, response) => {
         if (error == null) {
             console.log("Answers Community done");
             response.end("done");
-            console.log(result[1][0])
-            var message = {
-                app_id: "9a34fce0-8e58-42af-b1bf-217caa61de6f",
-                contents: { "en": `${result[1][0]["username"]} responded to your query "${result[1][0]["query"]}"` },
-                headings: { "en": "Query Response" },
-                include_external_user_ids: [result[1][0]["phone"]],
-                channel_for_external_user_ids: "push",
-            };
+            if (request.body.phone != result[1][0]["phone"]) {
+                console.log(result[1][0])
+                var message = {
+                    app_id: "9a34fce0-8e58-42af-b1bf-217caa61de6f",
+                    contents: { "en": `${result[1][0]["username"]} responded to your query "${result[1][0]["query"]}"` },
+                    headings: { "en": "Query Response" },
+                    include_external_user_ids: [result[1][0]["phone"]],
+                    channel_for_external_user_ids: "push",
+                };
 
-            console.log(message)
+                console.log(message)
 
-            var headers = {
-                "Content-Type": "application/json; charset=utf-8",
-                "Authorization": "Basic NDdkZjBlYTUtMmE2Yi00NTMzLWJjNjUtMDliNDEyZWNmMzll"
-            };
+                var headers = {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Authorization": "Basic NDdkZjBlYTUtMmE2Yi00NTMzLWJjNjUtMDliNDEyZWNmMzll"
+                };
 
-            var options = {
-                host: "onesignal.com",
-                port: 443,
-                path: "/api/v1/notifications",
-                method: "POST",
-                headers: headers
-            };
+                var options = {
+                    host: "onesignal.com",
+                    port: 443,
+                    path: "/api/v1/notifications",
+                    method: "POST",
+                    headers: headers
+                };
 
 
-            var req = https.request(options, function (res) {
-                res.on('data', function (data) {
-                    console.log("Response:\n", JSON.parse(data));
-                    connection.query('Insert into notifications Values(NULL,?,?,?,NOW(),?)', [request.body.label, request.body.title, request.body.content, JSON.parse(data)["error"] === undefined ? "success" : "failure"], function (error, results) { });
-                    if (JSON.parse(data)["error"] === undefined) {
-                        response.end("done");
-                    }
-                    else {
-                        response.end("error");
-                    }
+                var req = https.request(options, function (res) {
+                    res.on('data', function (data) {
+                        console.log("Response:\n", JSON.parse(data));
+                        connection.query('Insert into notifications Values(NULL,?,?,?,NOW(),?)', [request.body.label, request.body.title, request.body.content, JSON.parse(data)["error"] === undefined ? "success" : "failure"], function (error, results) { });
+                        if (JSON.parse(data)["error"] === undefined) {
+                            response.end("done");
+                        }
+                        else {
+                            response.end("error");
+                        }
+                    });
                 });
-            });
 
-            req.on('error', function (e) {
-                console.log("ERROR:");
-                console.log(e);
-                response.end("error");
-            });
+                req.on('error', function (e) {
+                    console.log("ERROR:");
+                    console.log(e);
+                    response.end("error");
+                });
 
-            req.write(JSON.stringify(message));
-            req.end();
+                req.write(JSON.stringify(message));
+                req.end();
+            }
 
         }
         else {
