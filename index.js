@@ -116,7 +116,7 @@ app.get("/getItems", upload.none(), (request, response) => {
 app.post("/addItem", upload.single('itemPic'), (request, response) => {
     console.log("Add to Market Place");
     console.log(request.body);
-    connection.query("Insert into items Values(NULL,?,?,?,?,now(),(Select id from users where phone=?),concat('http://192.168.18.46:3000/itemPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into items Values(NULL,?,?,?,?,now(),(Select id from users where phone=?),concat('http://192.168.18.2:3000/itemPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add to Market place done");
             response.end("done");
@@ -153,7 +153,7 @@ app.get("/getTools", upload.none(), (request, response) => {
 // add Tool
 app.post("/addTool", upload.single('toolPic'), (request, response) => {
     console.log("Add to Market Place");
-    connection.query("Insert into tools Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.46:3000/toolPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into tools Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.2:3000/toolPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add to Market place done");
             response.end("done");
@@ -190,7 +190,7 @@ app.get("/getLands", upload.none(), (request, response) => {
 // add lands
 app.post("/addLand", upload.single('landPic'), (request, response) => {
     console.log("Add land");
-    connection.query("Insert into lands Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.46:3000/landPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
+    connection.query("Insert into lands Values(NULL,?,?,?,?,(Select id from users where phone=?),concat('http://192.168.18.2:3000/landPics/',?))", [request.body.name, request.body.price, request.body.place, request.body.district, request.body.phone, request.file.filename], function (error, result) {
         if (error == null) {
             console.log("Add land done");
             response.end("done");
@@ -612,7 +612,7 @@ app.post("/askCommunity", upload.single('askPic'), (request, response) => {
     console.log("Ask Community");
     console.log(request.body);
     var arr = []
-    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.46:3000/askPics/',?),(Select id from users where phone=?)); Select phone from users where not phone = ?; Select name from users where phone=?", [request.body.query, request.body.description, request.file.filename, request.body.phone, request.body.phone, request.body.phone], function (error, result) {
+    connection.query("Insert into doubts(id,query,description,pic,userId) Values(NULL,?,?,concat('http://192.168.18.2:3000/askPics/',?),(Select id from users where phone=?)); Select phone from users where not phone = ?; Select name from users where phone=?", [request.body.query, request.body.description, request.file.filename, request.body.phone, request.body.phone, request.body.phone], function (error, result) {
         if (error == null) {
             console.log("Add Community done");
             response.end("done");
@@ -1179,6 +1179,6 @@ app.get('/notificationsInfo', upload.none(), function (request, response) {
 
 
 // start the server
-http.listen(3000, "192.168.18.46", function () {
+http.listen(3000, "192.168.18.2", function () {
     console.log("Listening on*:3000");
 });
