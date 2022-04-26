@@ -968,7 +968,7 @@ app.get('/homeInfo', upload.none(), function (request, response) {
 // get district info
 app.post('/districtInfo', upload.none(), function (request, response) {
     if (request.cookies["status"] == "lsjfklsdkflsdkfldksf'")
-        connection.query('Select sha2(t1.id,256) as id,t2.disease,(Select count(id) from diseaseInfo where disease=t1.disease) as count from diseaseInfo t1 inner join diseases t2 on t1.disease=t2.id where t1.district=?', [request.body.district], function (error, results) {
+        connection.query('SELECT count(id) as count,(SELECT disease from diseases where t1.disease+1=diseases.id) as disease FROM diseaseInfo t1 WHERE district = ? GROUP by disease;', [request.body.district], function (error, results) {
             if (error == null) {
                 response.end(JSON.stringify(results));
             }
